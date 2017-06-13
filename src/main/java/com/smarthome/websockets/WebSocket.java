@@ -21,6 +21,7 @@ public class WebSocket  implements Serializable {
 	"e-current","on"*/
 
 	public WebSocket() throws IOException, ClassNotFoundException {
+		listState.put("light",readFile(PATH).get("light"));
 	}
 
 	@OnMessage
@@ -29,9 +30,11 @@ public class WebSocket  implements Serializable {
 
 			for (Session sess : session.getOpenSessions()) {
 				if (sess.isOpen())
-					sess.getBasicRemote().sendText("TurnOn");
+					sess.getBasicRemote().sendText(message);
+
 			}
-			listState.put(getSensorNameFromMessage(message),getSensorStateFromMessage(message));
+
+			listState.put("light", message);
 	}
 
 
@@ -39,18 +42,26 @@ public class WebSocket  implements Serializable {
 	public void onOpen(Session session) throws IOException, ClassNotFoundException, EncodeException {
 		sessions.add(session);
 
-		String message = "state";
+		try {
+			listState.put("light",readFile(PATH).get("light"));
+		} finally {
 			for (Session sess : sessions) {
 				if (sess.isOpen())
-					sess.getBasicRemote().sendObject(message);
+					sess.getBasicRemote().sendText(listState.get("light"));
 			}
+		}
+
 	}
 
 	@OnClose
 	public void onClose(Session session) throws IOException {
-		System.out.println("Connection closed");
-		sessions.remove(session);
-		saveFile(listState,PATH);
+
+		try {
+			System.out.println("Connection closed");
+			sessions.remove(session);
+		} finally {
+			saveFile(listState,PATH);
+		}
 	}
 
 	public void saveFile(HashMap<String, String> listOfStates, String pathFile)

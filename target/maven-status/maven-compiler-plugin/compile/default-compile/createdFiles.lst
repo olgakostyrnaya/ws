@@ -1,4 +1,3 @@
 com\smarthome\impl\FileServiceImpl.class
-com\smarthome\controller\RoomController.class
 com\smarthome\interfaces\FileService.class
 com\smarthome\websockets\WebSocket.class

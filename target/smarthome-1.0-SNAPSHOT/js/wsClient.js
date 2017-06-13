@@ -18,17 +18,44 @@ webSocket.onmessage = function (event) {
 
 webSocket.onclose = function (closeEvent) {
     alert(closeEvent.code);
+
 }
 
+
+
 function onMessage(event) {
-    /*document.getElementById('but').innerHTML += '<br />'
-        + event.data;*/
-    var but = document.getElementById('but');
-    $(but).attr("value",event.data);
+
+    var image = document.getElementById("frameForLightBulb");
+
+    switch (event.data){
+        case "on" : {
+            $(image).attr("src", "./resources/lighton.jpg");
+            break;
+        }
+        case "off" : {
+            $(image).attr("src", "./resources/lightoff.jpg");
+            break;
+        }
+        default : break;
+    }
+
 }
 
 function onOpen(event) {
-    document.getElementById('messages').innerHTML = 'Now Connection established';
+
+    var image = document.getElementById("frameForLightBulb");
+
+    switch (event.data){
+        case "on" : {
+            $(image).attr("src", "./resources/lighton.jpg");
+            break;
+        }
+        case "off" : {
+            $(image).attr("src", "./resources/lightoff.jpg");
+            break;
+        }
+        default : break;
+    }
 
 }
 
@@ -36,11 +63,20 @@ function onError(event) {
     alert(event.data);
 }
 
-function start(sensor,state) {
-    var text = /*document.getElementById(sensor).value*/ sensor +"," +document.getElementById(state).value ;
+function start() {
+    var image = document.getElementById("frameForLightBulb");
 
-    webSocket.send(text);
+    if ($(image).attr("src") == "./resources/lightoff.jpg"){
+        $(image).attr("src", "./resources/lighton.jpg");
+        webSocket.send("on");
+    } else {
+        $(image).attr("src", "./resources/lightoff.jpg");
+        webSocket.send("off");
+    };
     return false;
 }
 
 
+$(window).onunload(function() {
+    webSocket.close();
+});
